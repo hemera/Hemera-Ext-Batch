@@ -21,7 +21,7 @@ mainability and scalability.
 # Hemera - Ext Batch
 
 **Hemera - Ext Batch** defines the resource extension package that provides
-batch requst support. Applications that require processing of batch requests
+batch request support. Applications that require processing of batch requests
 may extend the classes provided in this package to easily create a resource
 that handles batch requests based on JSON format and JSONPath access format.
 
