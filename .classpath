@@ -6,7 +6,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Hemera-Ext-Batch"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Hemera-Core-Structure"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Hemera-Core-Utility"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Hemera-Utility-OAuth"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Hemera-Core-Execution"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Hemera-Ext-OAuth"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
