@@ -6,7 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import hemera.ext.batch.util.Request;
-import hemera.utility.oauth.request.AbstractOAuthRequest;
+import hemera.ext.oauth.request.AbstractOAuthRequest;
 
 /**
  * <code>BatchPostRequest</code> defines the request for

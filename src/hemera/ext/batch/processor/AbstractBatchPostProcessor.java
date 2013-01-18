@@ -10,7 +10,7 @@ import hemera.ext.batch.request.BatchPostRequest;
 import hemera.ext.batch.response.BatchPostResponse;
 import hemera.ext.batch.util.Request;
 import hemera.ext.batch.util.RequestSender;
-import hemera.utility.oauth.processor.AbstractOAuthProcessor;
+import hemera.ext.oauth.processor.AbstractOAuthProcessor;
 
 /**
  * <code>AbstractBatchPostProcessor</code> defines the
