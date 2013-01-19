@@ -105,7 +105,8 @@ public class Request {
 	 * write permission. <code>false</code> otherwise.
 	 */
 	public boolean requiresWritePermission() {
-		if (this.method == EHttpMethod.Get || this.method == EHttpMethod.Head || this.method == EHttpMethod.Trace) return false;
+		if (this.method == EHttpMethod.Options || this.method == EHttpMethod.Get || this.method == EHttpMethod.Head
+				|| this.method == EHttpMethod.Trace) return false;
 		else return true;
 	}
 	
