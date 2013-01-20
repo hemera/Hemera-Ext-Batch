@@ -34,7 +34,7 @@ public class RequestSender {
 	 * URL.
 	 */
 	public RequestSender(final String baseURL) {
-		this.baseURL = baseURL;
+		this.baseURL = this.getLettersAndDigitsPortion(baseURL.trim());
 	}
 
 	/**
@@ -45,13 +45,17 @@ public class RequestSender {
 	 * @throws IOException If sending request failed.
 	 */
 	public JSONObject sendRequest(final Request request) throws IOException, JSONException {
-		if (request.method == EHttpMethod.Get) return this.sendGetRequest(request.uri, request.args);
-		else return this.sendSubmitRequest(request.uri, request.method, request.args);
+		if (request.method == EHttpMethod.Post || request.method == EHttpMethod.Put || request.method == EHttpMethod.Connect) {
+			// There's a bug in Apache that DELETE does not support output.
+			return this.sendOutputRequest(request.uri, request.method, request.args);
+		} else {
+			return this.sendURIRequest(request.uri, request.method, request.args);
+		}
 	}
-	
+
 	/**
-	 * Send a get request to the given URI with given
-	 * arguments.
+	 * Send a URI request to the given URI with given
+	 * arguments appended to the URI itself.
 	 * @param uri The <code>String</code> URI to send to.
 	 * @param args The <code>Map</code> of all request
 	 * <code>String</code> arguments. <code>null</code>
@@ -60,10 +64,10 @@ public class RequestSender {
 	 * @throws JSONException If parsing response failed.
 	 * @throws IOException If sending request failed.
 	 */
-	private JSONObject sendGetRequest(final String uri, final Map<String, String> args) throws IOException, JSONException {
+	private JSONObject sendURIRequest(final String uri, final EHttpMethod method, final Map<String, String> args) throws IOException, JSONException {
 		final URL url = this.buildURL(uri, args);
 		final HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-		connection.setRequestMethod(EHttpMethod.Get.value);
+		connection.setRequestMethod(method.value);
 		return this.getResponse(connection);
 	}
 
@@ -95,7 +99,7 @@ public class RequestSender {
 	}
 
 	/**
-	 * Send a submit request to the given URI with given
+	 * Send a output request to the given URI with given
 	 * arguments in the request body.
 	 * @param uri The <code>String</code> URI to send to.
 	 * @param args The <code>Map</code> of all request
@@ -105,7 +109,7 @@ public class RequestSender {
 	 * @throws JSONException If parsing response failed.
 	 * @throws IOException If sending request failed.
 	 */
-	private JSONObject sendSubmitRequest(final String uri, final EHttpMethod method, final Map<String, String> args) throws IOException, JSONException {
+	private JSONObject sendOutputRequest(final String uri, final EHttpMethod method, final Map<String, String> args) throws IOException, JSONException {
 		// Create a new connection with output.
 		final String endPoint = this.baseURL + this.getValidURI(uri);
 		final URL url = new URL(endPoint);
@@ -149,12 +153,45 @@ public class RequestSender {
 	 * @param value The <code>String</code> value to
 	 * parse.
 	 * @return The valid <code>String</code> URI in
-	 * the format of <code>resource/action</code>.
+	 * the format of <code>/uri_value</code>.
 	 */
 	private String getValidURI(final String value) {
-		final int beginIndex = (value.startsWith("/")) ? 1 : 0;
-		final int endIndex = (value.endsWith("/")) ? value.length()-1 : value.length();
-		return value.substring(beginIndex, endIndex);
+		if (value.trim().isEmpty()) return value.trim();
+		final String portion = this.getLettersAndDigitsPortion(value.trim());
+		// Compose URI.
+		final StringBuilder builder = new StringBuilder();
+		return builder.append("/").append(portion).toString();
+	}
+
+	/**
+	 * Retrieve the letters and digits portion of the
+	 * given string value.
+	 * @param value The <code>String</code> value.
+	 * @return The <code>String</code> portion that
+	 * trims the preceding and trailing non-letter or
+	 * digit characters.
+	 */
+	private String getLettersAndDigitsPortion(final String value) {
+		// Find the first letter or digit.
+		final int length = value.length();
+		int beginIndex = -1;
+		for (int i = 0; i < length; i++) {
+			if (Character.isLetterOrDigit(value.charAt(i))) {
+				beginIndex = i;
+				break;
+			}
+		}
+		if (beginIndex < 0) throw new IllegalArgumentException("Invalid URI " + value);
+		// Find last letter or digit.
+		int endIndex = -1;
+		for (int i = length-1; i >= 0; i--) {
+			if (Character.isLetterOrDigit(value.charAt(i))) {
+				endIndex = i;
+				break;
+			}
+		}
+		if (endIndex < 0) throw new IllegalArgumentException("Invalid URI " + value);
+		return value.substring(beginIndex, endIndex+1);
 	}
 
 	/**

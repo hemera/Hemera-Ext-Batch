@@ -23,8 +23,8 @@ public class BatchPostRequest extends AbstractOAuthRequest {
 	public Request[] requests;
 
 	@Override
-	public void parse(final String[] uri, final Map<String, Object> arguments) throws Exception {
-		super.parse(uri, arguments);
+	public void parse(final String[] path, final Map<String, Object> arguments) throws Exception {
+		super.parse(path, arguments);
 		final String batchStr = (String)arguments.get("requests");
 		if (batchStr == null || batchStr.trim().isEmpty()) {
 			throw new IllegalArgumentException("Requests must be specified.");
