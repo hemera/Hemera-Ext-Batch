@@ -58,16 +58,16 @@ public class Request {
 				final JSONObject arg = argsArray.getJSONObject(i);
 				final String key = arg.getString("key");
 				// Value may be a JSON object indicating a dependent request.
-				final JSONObject value = arg.optJSONObject("value");
-				if (value == null) {
-					final String stringValue = arg.getString("value");
-					this.args.put(key, stringValue);
-				}
-				// Add as child request, whose response value will be later
-				// put into the arguments map when the child request is done.
-				else {
-					final ChildRequest child = new ChildRequest(value, key);
+				final String value = arg.getString("value");
+				try {
+					// Add as child request, whose response value will be later
+					// put into the arguments map when the child request is done.
+					final JSONObject childData = new JSONObject(value);
+					final ChildRequest child = new ChildRequest(childData, key);
 					this.children.add(child);
+				} catch (final JSONException e) {
+					// Not a JSON object, so not a child request.
+					this.args.put(key, value);
 				}
 			}
 		} else {
