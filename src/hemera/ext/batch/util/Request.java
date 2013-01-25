@@ -2,10 +2,10 @@ package hemera.ext.batch.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -52,13 +52,13 @@ public class Request {
 		this.uri = data.getString("uri");
 		if (data.has("args")) {
 			this.args = new HashMap<String, String>();
-			final JSONArray argsArray = data.getJSONArray("args");
-			final int count = argsArray.length();
-			for (int i = 0; i < count; i++) {
-				final JSONObject arg = argsArray.getJSONObject(i);
-				final String key = arg.getString("key");
+			final JSONObject args = data.getJSONObject("args");
+			@SuppressWarnings("unchecked")
+			final Iterator<Object> argKeysIterator = args.keys();
+			while (argKeysIterator.hasNext()) {
+				final String key = (String)argKeysIterator.next();
+				final String value = args.getString(key);
 				// Value may be a JSON object indicating a dependent request.
-				final String value = arg.getString("value");
 				try {
 					// Add as child request, whose response value will be later
 					// put into the arguments map when the child request is done.
