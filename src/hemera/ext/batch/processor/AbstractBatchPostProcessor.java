@@ -11,6 +11,7 @@ import hemera.ext.batch.response.BatchPostResponse;
 import hemera.ext.batch.util.Request;
 import hemera.ext.batch.util.RequestSender;
 import hemera.ext.oauth.processor.AbstractOAuthProcessor;
+import hemera.ext.oauth.token.AbstractAccessToken;
 
 /**
  * <code>AbstractBatchPostProcessor</code> defines the
@@ -46,7 +47,7 @@ public abstract class AbstractBatchPostProcessor extends AbstractOAuthProcessor<
 	}
 
 	@Override
-	protected BatchPostResponse processAuthorizedRequest(final BatchPostRequest request) throws Exception {
+	protected BatchPostResponse processAuthorizedRequest(final AbstractAccessToken accessToken, final BatchPostRequest request) throws Exception {
 		// Send all tasks in parallel.
 		@SuppressWarnings("unchecked")
 		final IResultTaskHandle<JSONObject>[] handles = new IResultTaskHandle[request.requests.length];
