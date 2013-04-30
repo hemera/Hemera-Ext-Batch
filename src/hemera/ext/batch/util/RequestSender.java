@@ -6,9 +6,11 @@ import hemera.core.utility.FileUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Map;
 
 import org.json.JSONException;
@@ -20,7 +22,7 @@ import org.json.JSONObject;
  * send various types of HTTP requests.
  *
  * @author Yi Wang (Neakor)
- * @version 1.0.0
+ * @version 1.0.2
  */
 public class RequestSender {
 	/**
@@ -80,8 +82,10 @@ public class RequestSender {
 	 * if there are no arguments.
 	 * @return The <code>URL</code> instance.
 	 * @throws MalformedURLException If creating URL failed.
+	 * @throws UnsupportedEncodingException If UTF-8
+	 * encoding is not supported.
 	 */
-	private URL buildURL(final String uri, final Map<String, String> args) throws MalformedURLException {
+	private URL buildURL(final String uri, final Map<String, String> args) throws MalformedURLException, UnsupportedEncodingException {
 		final StringBuilder builder = new StringBuilder();
 		builder.append(this.baseURL).append(this.getValidURI(uri));
 		if (args == null || args.isEmpty()) return new URL(builder.toString());
@@ -91,7 +95,9 @@ public class RequestSender {
 		int index = 0;
 		for (final String key : keys) {
 			final String value = args.get(key);
-			builder.append(key).append("=").append(value);
+			final String encodedKey = URLEncoder.encode(key, "UTF-8");
+			final String encodedValue = URLEncoder.encode(value, "UTF-8");
+			builder.append(encodedKey).append("=").append(encodedValue);
 			if (index != last) builder.append("&");
 			index++;
 		}
@@ -132,8 +138,10 @@ public class RequestSender {
 	 * <code>String</code> arguments. <code>null</code>
 	 * if there are no arguments. 
 	 * @return The <code>String</code> output data.
+	 * @throws UnsupportedEncodingException If UTF-8
+	 * encoding is not supported.
 	 */
-	private String buildOutput(final Map<String, String> args) {
+	private String buildOutput(final Map<String, String> args) throws UnsupportedEncodingException {
 		final StringBuilder builder = new StringBuilder();
 		if (args == null || args.isEmpty()) return builder.toString();
 		final int last = args.size() - 1;
@@ -141,7 +149,9 @@ public class RequestSender {
 		int index = 0;
 		for (final String key : keys) {
 			final String value = args.get(key);
-			builder.append(key).append("=").append(value);
+			final String encodedKey = URLEncoder.encode(key, "UTF-8");
+			final String encodedValue = URLEncoder.encode(value, "UTF-8");
+			builder.append(encodedKey).append("=").append(encodedValue);
 			if (index != last) builder.append("&");
 			index++;
 		}

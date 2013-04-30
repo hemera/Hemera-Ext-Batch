@@ -19,9 +19,9 @@ import hemera.ext.oauth.token.AbstractAccessToken;
  * performs an array of requests at once.
  *
  * @author Yi Wang (Neakor)
- * @version 1.0.0
+ * @version 1.0.1
  */
-public abstract class AbstractBatchPostProcessor extends AbstractOAuthProcessor<BatchPostRequest, BatchPostResponse> {
+public abstract class AbstractBatchPostProcessor<RQ extends BatchPostRequest> extends AbstractOAuthProcessor<RQ, BatchPostResponse> {
 	/**
 	 * The <code>IExecutionService</code> instance.
 	 */
@@ -42,12 +42,12 @@ public abstract class AbstractBatchPostProcessor extends AbstractOAuthProcessor<
 	}
 
 	@Override
-	protected BatchPostResponse unauthorizedResponse(final BatchPostRequest request) throws Exception {
+	protected BatchPostResponse unauthorizedResponse(final RQ request) throws Exception {
 		return new BatchPostResponse(EHttpStatus.C401_Unauthorized, "Unauthorized request.");
 	}
 
 	@Override
-	protected BatchPostResponse processAuthorizedRequest(final AbstractAccessToken accessToken, final BatchPostRequest request) throws Exception {
+	protected BatchPostResponse processAuthorizedRequest(final AbstractAccessToken accessToken, final RQ request) throws Exception {
 		// Send all tasks in parallel.
 		@SuppressWarnings("unchecked")
 		final IResultTaskHandle<JSONObject>[] handles = new IResultTaskHandle[request.requests.length];
@@ -65,13 +65,8 @@ public abstract class AbstractBatchPostProcessor extends AbstractOAuthProcessor<
 	}
 
 	@Override
-	protected BatchPostResponse exceptionResponse(final BatchPostRequest request, final Exception e) {
+	protected BatchPostResponse exceptionResponse(final RQ request, final Exception e) {
 		return new BatchPostResponse(EHttpStatus.C500_InternalServerError, e.getMessage());
-	}
-	
-	@Override
-	public Class<BatchPostRequest> getRequestType() {
-		return BatchPostRequest.class;
 	}
 	
 	/**
